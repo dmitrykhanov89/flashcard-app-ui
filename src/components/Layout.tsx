@@ -31,7 +31,7 @@ export const Layout = () => {
         },
         {
             label: 'Library',
-            to: '/my-sets',
+            to: '/library',
             icon: LibraryBooksIcon,
         },
     ];

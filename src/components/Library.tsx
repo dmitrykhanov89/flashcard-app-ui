@@ -1,6 +1,6 @@
 import {useEffect, useState} from 'react';
 import {Link} from 'react-router-dom';
-import {fetchFlashcardSets} from '../api/flashcardSet';
+import {fetchFlashcardSetsByOwner} from '../api/flashcardSet';
 import {useAuth} from '../hooks/UseAuth';
 import type {flashcardSet} from '../types/flashcardSetTypes';
 
@@ -9,14 +9,14 @@ import type {flashcardSet} from '../types/flashcardSetTypes';
  *
  * Загружает и отображает список наборов, принадлежащих пользователю.
  */
-export const MySets = () => {
-    const {token} = useAuth();
+export const Library = () => {
+    const { token, user } = useAuth();
     const [sets, setSets] = useState<flashcardSet[]>([]);
 
     useEffect(() => {
-        if (!token) return;
-        fetchFlashcardSets(token).then(setSets);
-    }, [token]);
+        if (!token || !user) return; // ждем, пока user и token загрузятся
+        fetchFlashcardSetsByOwner(token, user.id).then(setSets).catch(console.error);
+    }, [token, user]);
 
     return (
         <div>

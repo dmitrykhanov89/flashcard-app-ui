@@ -1,4 +1,4 @@
-import {API_BASE_URL} from '../Constants/BaseURL';
+import {FLASHCARD_SET_URL} from '../Constants/BaseURL';
 import type {flashcardSet, NewFlashcardSet, LastSeenFlashcardSetDto} from '../types/flashcardSetTypes';
 import {authHeader} from '../Constants/AuthHeader';
 
@@ -10,7 +10,7 @@ import {authHeader} from '../Constants/AuthHeader';
  * @throws Ошибка при неуспешном HTTP-ответе.
  */
 export const fetchFlashcardSets = async (token: string): Promise<flashcardSet[]> => {
-    const res = await fetch(`${API_BASE_URL}/flashcardSet`, {
+    const res = await fetch(`${FLASHCARD_SET_URL}`, {
         headers: authHeader(token),
     });
     if (!res.ok) {
@@ -28,7 +28,7 @@ export const fetchFlashcardSets = async (token: string): Promise<flashcardSet[]>
  * @throws Ошибка при неуспешном HTTP-ответе.
  */
 export const fetchFlashcardSetById = async (token: string, id: number): Promise<flashcardSet> => {
-    const res = await fetch(`${API_BASE_URL}/flashcardSet/${id}`, {
+    const res = await fetch(`${FLASHCARD_SET_URL}/${id}`, {
         headers: authHeader(token),
     });
     if (!res.ok) {
@@ -49,7 +49,7 @@ export const createFlashcardSet = async (
     token: string,
     payload: NewFlashcardSet
 ): Promise<flashcardSet> => {
-    const res = await fetch(`${API_BASE_URL}/flashcardSet`, {
+    const res = await fetch(`${FLASHCARD_SET_URL}`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -74,8 +74,29 @@ export const createFlashcardSet = async (
 export const fetchLastSeenFlashcardSets = async (
     token: string
 ): Promise<LastSeenFlashcardSetDto[]> => {
-    const res = await fetch(`${API_BASE_URL}/flashcardSet/LastSeenSets`, {
+    const res = await fetch(`${FLASHCARD_SET_URL}/LastSeenSets`, {
         headers: authHeader(token),
     });
     return res.ok ? res.json() : [];
+};
+
+/**
+ * Получить все наборы карточек по ID владельца (пользователя).
+ *
+ * @param token JWT-токен пользователя для авторизации.
+ * @param ownerId ID пользователя-владельца наборов.
+ * @returns Массив объектов {@link flashcardSet}.
+ * @throws Ошибка при неуспешном HTTP-ответе.
+ */
+export const fetchFlashcardSetsByOwner = async (
+    token: string,
+    ownerId: number
+): Promise<flashcardSet[]> => {
+    const res = await fetch(`${FLASHCARD_SET_URL}/owner/${ownerId}`, {
+        headers: authHeader(token),
+    });
+    if (!res.ok) {
+        throw new Error(`Ошибка: ${res.status}`);
+    }
+    return res.json();
 };
