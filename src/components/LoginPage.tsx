@@ -97,8 +97,7 @@ export const LoginPage = () => {
                         <Typography
                             color="error"
                             sx={{
-                                minHeight: '20px',
-                                visibility: error ? 'visible' : 'hidden'
+                                minHeight: '20px', visibility: error ? 'visible' : 'hidden'
                             }}
                         >
                             {error || 'placeholder'}

@@ -1,3 +1,4 @@
+import { csrfService } from './csrfService';
 /** Поддерживаемые HTTP методы */
 type HttpMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
 
@@ -38,10 +39,19 @@ export const httpClient = async <B = unknown, R = unknown>(url: string, options?
         headers['Authorization'] = `Bearer ${storedToken}`;
     }
 
+    const isModifying = ['POST', 'PUT', 'PATCH', 'DELETE'].includes(options?.method || 'GET');
+    if (isModifying) {
+        const csrfToken = csrfService.getTokenFromCookie();
+        if (csrfToken) {
+            headers['X-XSRF-TOKEN'] = decodeURIComponent(csrfToken);
+        }
+    }
+
     const response = await fetch(url, {
         method: options?.method || 'GET',
         headers,
         body: options?.body ? JSON.stringify(options.body) : null,
+        credentials: 'include', // нужно для отправки cookie
     });
 
     // Если сервер вернул новый токен — сохраняем его
