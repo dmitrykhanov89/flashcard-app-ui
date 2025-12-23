@@ -5,6 +5,8 @@ import {CardFlipper} from "./CardFlipper";
 import {Box, Typography, Button, Dialog, DialogTitle, DialogContent, DialogActions} from "@mui/material";
 import {KeyboardButtons} from "../Constants/KeyboardButtons.ts";
 import {deleteFlashcardSet} from "../api/flashcardSet.ts";
+import {speakText} from "../services/textToSpeech";
+import {getTermVoice, getDefVoice} from "../utils/voiceCookies";
 
 export const FlashcardSet = () => {
     const {id} = useParams<{ id: string }>();
@@ -51,16 +53,18 @@ export const FlashcardSet = () => {
         return () => window.removeEventListener("keydown", handleKeyDown);
     }, [goNext, goPrev, toggleFlip]);
 
-    const speakCard = (term: string, definition: string, flipped: boolean) => {
-        const text = flipped ? definition : term;
-        const lang = flipped ? "ru-RU" : "en-US";
+    useEffect(() => {
+        if (!currentCard || !id) return;
 
-        if (!text) return;
-        const utterance = new SpeechSynthesisUtterance(text);
-        utterance.lang = lang;
-        speechSynthesis.cancel();
-        speechSynthesis.speak(utterance);
-    };
+        // только если включён voice для набора
+        if (!flipped && getTermVoice(id)) {
+            speakText(currentCard.term);
+        }
+
+        if (flipped && getDefVoice(id)) {
+            speakText(currentCard.definition);
+        }
+    }, [currentCard, flipped, id]);
 
     const handleDelete = async () => {
         if (!id) return;
@@ -106,10 +110,9 @@ export const FlashcardSet = () => {
                         <Button variant="outlined" onClick={goPrev}>Предыдущая</Button>
                         <Button variant="outlined" onClick={goNext}>Следующая</Button>
                         <Button variant="contained" color="secondary" onClick={() =>
-                            speakCard(currentCard.term, currentCard.definition, flipped)}>🔊 Слушать</Button>
+                                speakText(flipped ? currentCard.definition : currentCard.term)}>🔊 Voice</Button>
                     </Box>
 
-                    {/* Диалог подтверждения удаления */}
                     <Dialog open={deleteDialogOpen} onClose={() => setDeleteDialogOpen(false)}>
                         <DialogTitle>Подтверждение удаления</DialogTitle>
                         <DialogContent>

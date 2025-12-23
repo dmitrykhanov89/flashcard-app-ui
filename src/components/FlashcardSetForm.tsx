@@ -1,19 +1,23 @@
 import {useState} from 'react';
 import {useAuth} from '../hooks/UseAuth';
 import {useLocation, useNavigate} from 'react-router-dom';
-import {Box, Button, Container, IconButton, TextField, Typography} from '@mui/material';
+import {Box, Button, Container, IconButton, TextField, Typography, Switch, FormControlLabel} from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import type {Card, FlashcardSet} from '../types/flashcardSetTypes';
 import {createFlashcardSet, updateFlashcardSet} from "../api/flashcardSet.ts";
+import {getTermVoice, getDefVoice, setTermVoice, setDefVoice} from "../utils/voiceCookies";
 
 export const FlashcardSetForm = () => {
     const {user} = useAuth();
     const navigate = useNavigate();
     const location = useLocation();
     const propData = location.state?.data;
-    const isEditMode = !!propData; // режим редактирования
+    const isEditMode = !!propData;
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const setId = propData?.id;
+    const [termVoice, setTermVoiceState] = useState(setId ? getTermVoice(setId) : false);
+    const [defVoice, setDefVoiceState] = useState(setId ? getDefVoice(setId) : false);
     const [flashcardSet, setFlashcardSet] = useState<FlashcardSet>(() => {
         if (propData) {
             return {
@@ -32,7 +36,7 @@ export const FlashcardSetForm = () => {
             description: '',
             cards: [
                 {term: '', definition: ''},
-                {term: '', definition: ''}
+                {term: '', definition: ''},
             ],
             userId: user?.id
         };
@@ -58,7 +62,10 @@ export const FlashcardSetForm = () => {
             const text = reader.result as string;
             const lines = text.split("\n").map(l => l.trim()).filter(Boolean);
             const importedCards = lines.map(line => {
-                const separator = line.includes("-") ? "-" : line.includes(",") ? "," : line.includes(";") ? ";" : null;
+                const separator =
+                    line.includes("-") ? "-" :
+                        line.includes(",") ? "," :
+                            line.includes(";") ? ";" : null;
                 if (!separator) return null;
                 const [term, definition] = line.split(separator).map(s => s.trim());
                 if (!term || !definition) return null;
@@ -87,10 +94,11 @@ export const FlashcardSetForm = () => {
         try {
             if (isEditMode && flashcardSet.id) {
                 await updateFlashcardSet(flashcardSet);
+                navigate(`/flashcard-set/${flashcardSet.id}`);
             } else {
                 await createFlashcardSet(flashcardSet);
+                navigate('/');
             }
-            navigate('/');
         } catch (err) {
             setError(err instanceof Error ? err.message : 'Произошла ошибка при сохранении набора');
         } finally {
@@ -104,11 +112,7 @@ export const FlashcardSetForm = () => {
                 {isEditMode ? 'Редактировать набор карточек' : 'Создать новый набор карточек'}
             </Typography>
             <Box component="form" onSubmit={handleSubmit} noValidate>
-                {error && (
-                    <Typography color="error" sx={{mb: 2}}>
-                        {error}
-                    </Typography>
-                )}
+                {error && <Typography color="error" sx={{mb: 2}}>{error}</Typography>}
                 <TextField
                     label="Название"
                     value={flashcardSet.name}
@@ -126,6 +130,34 @@ export const FlashcardSetForm = () => {
                     rows={3}
                     margin="normal"
                 />
+
+                {isEditMode && setId && (
+                    <>
+                        <Typography variant="h6" mt={2}>Voice settings</Typography>
+                        <FormControlLabel control={
+                            <Switch
+                                checked={termVoice}
+                                onChange={(_, v) => {
+                                    setTermVoiceState(v);
+                                    setTermVoice(setId, v);
+                                }}
+                            />
+                        }
+                                          label="Voice for terms"
+                        />
+                        <FormControlLabel control={
+                            <Switch
+                                checked={defVoice}
+                                onChange={(_, v) => {
+                                    setDefVoiceState(v);
+                                    setDefVoice(setId, v);
+                                }}
+                            />
+                        }
+                                          label="Voice for definitions"
+                        />
+                    </>
+                )}
 
                 <Typography variant="h6" gutterBottom mt={2}>
                     Импорт карточек
