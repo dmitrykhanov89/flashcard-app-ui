@@ -129,7 +129,7 @@ export const RegisterForm = () => {
                         <Alert severity="error">{error}</Alert>
                     )}
                 </Box>
-                <Button type="submit" variant="contained" color="primary" fullWidth>
+                <Button type="submit" variant="contained" color="inherit" fullWidth>
                     Зарегистрироваться
                 </Button>
             </Stack>

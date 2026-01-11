@@ -3,6 +3,8 @@ import { useGetFlashcardSetsByUserId } from "../hooks/UseFlashcardFetch";
 import { FlashcardSetSelectCard } from "./FlashcardSetSelectCard.tsx";
 import type { FlashcardSet } from "../types/flashcardSetTypes";
 import { useTranslation } from 'react-i18next';
+import { CloseButton } from "./CloseButton.tsx";
+import { Box, Typography } from "@mui/material";
 
 /**
  * Компонент страницы с наборами карточек текущего пользователя.
@@ -15,17 +17,21 @@ export const Library = () => {
     const { data, loading } = useGetFlashcardSetsByUserId(user?.id);
 
     return (
-        <div>
-            <h2>{t('library.mySets')}</h2>
+        <Box>
+            <CloseButton to={`/`} />
 
-            {loading && <p>{t('library.loading')}</p>}
+            <Typography variant="h4" gutterBottom>
+                {t('library.mySets')}
+            </Typography>
+
+            {loading && <Typography>{t('library.loading')}</Typography>}
 
             {!loading && (!data || data.length === 0) && (
-                <p>{t('library.noSets')}</p>
+                <Typography>{t('library.noSets')}</Typography>
             )}
 
             {!loading && data && (
-                <div style={{ display: "flex", gap: 16, flexWrap: "wrap" }}>
+                <Box display="flex" gap={2} flexWrap="wrap">
                     {data
                         .filter(
                             (set): set is FlashcardSet & { id: number } =>
@@ -40,8 +46,8 @@ export const Library = () => {
                                 ownerName={set.ownerName}
                             />
                         ))}
-                </div>
+                </Box>
             )}
-        </div>
+        </Box>
     );
 };

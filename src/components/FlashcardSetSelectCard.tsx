@@ -45,13 +45,13 @@ export const FlashcardSetSelectCard = ({id, name, cardsCount, ownerName, imageUr
                         <img src={imageUrl} alt={name} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
                     ) : (
                         <Typography variant="h5" color="text.secondary">
-                            📚
+                            🧾
                         </Typography>
                     )}
                 </Box>
 
                 {/* Справа — текст */}
-                <Box component="div" sx={{ display: "flex", flexDirection: "column" }}>
+                <Box component="div" sx={{ display: "flex", flexDirection: "column", color: "black" }}>
                     <Typography variant="subtitle1" sx={{ fontWeight: 600, lineHeight: 1.2 }}>
                         {name}
                     </Typography>

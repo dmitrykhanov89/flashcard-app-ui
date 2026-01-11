@@ -3,6 +3,7 @@ import { useState, useEffect, useRef } from "react";
 import { Box, Typography, TextField, Button, Dialog, DialogTitle, DialogContent } from "@mui/material";
 import { useGetFlashcardById } from "../hooks/UseFlashcardFetch";
 import { useTranslation } from "react-i18next";
+import {CloseButton} from "./CloseButton.tsx";
 
 export const WriteTerm = () => {
     const { t } = useTranslation();
@@ -57,6 +58,7 @@ export const WriteTerm = () => {
 
     return (
         <Box display="flex" flexDirection="column" alignItems="center" gap={2} mt={4}>
+            <CloseButton to={`/flashcard-set/${id}`} />
             {!id && <Typography color="error">{t('written.idNotFound')}</Typography>}
             {loading && <Typography>{t('written.loading')}</Typography>}
             {error && <Typography color="error">{error.message}</Typography>}
@@ -68,7 +70,8 @@ export const WriteTerm = () => {
                     <Typography variant="h4">{data.name}</Typography>
                     <Typography mt={1}>{index + 1} / {cards.length}</Typography>
 
-                    <Box mt={4} p={3} border="1px solid #ccc" borderRadius="8px">
+                    <Box mt={4} p={3} border="1px solid #ccc" borderRadius="8px" display="flex" flexDirection="column"
+                         justifyContent="center" alignItems="center" gap={2} width="700px" height="400px" margin="0 auto" bgcolor="white">
                         <Typography variant="h6">{currentCard.definition}</Typography>
                     </Box>
 
@@ -80,6 +83,14 @@ export const WriteTerm = () => {
                             onChange={(e) => setUserAnswer(e.target.value)}
                             onKeyDown={(e) => e.key === "Enter" && handleAnswerSubmit()}
                             fullWidth
+                            variant="outlined"
+                            sx={{color: 'inherit', '& .MuiOutlinedInput-root': {
+                                    color: 'inherit', '& fieldset': {
+                                        borderColor: 'currentColor',
+                                    }, '&.Mui-focused fieldset': {borderColor: 'currentColor',},
+                                },
+                                '& .MuiInputLabel-root': {color: 'inherit',},
+                            }}
                         />
 
                         <Box display="flex" justifyContent="center" gap={2} width="100%">
@@ -106,8 +117,8 @@ export const WriteTerm = () => {
                                 {t('written.completedMessage', { errors })}<br /><br />
                                 {t('written.completedFooter', { name: data.name })}
                             </Typography>
-                            <Button fullWidth variant="contained" sx={{ mt: 2 }} onClick={() => navigate(`/flashcard-set/${id}`)}>
-                                {t('written.return')}
+                            <Button fullWidth variant="contained" color="inherit" sx={{ mt: 2 }} onClick={() =>
+                                navigate(`/flashcard-set/${id}`)}>{t('written.return')}
                             </Button>
                         </DialogContent>
                     </Dialog>

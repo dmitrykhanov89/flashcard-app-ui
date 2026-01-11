@@ -7,6 +7,7 @@ import type {Card, FlashcardSet} from '../types/flashcardSetTypes';
 import {createFlashcardSet, updateFlashcardSet} from "../api/flashcardSet.ts";
 import {getFromCookie, saveToCookie} from "../utils/cookies.ts";
 import { useTranslation } from 'react-i18next';
+import {CloseButton} from "./CloseButton.tsx";
 
 export const FlashcardSetForm = () => {
     const {t} = useTranslation();
@@ -50,6 +51,10 @@ export const FlashcardSetForm = () => {
         setTermVoiceState(getFromCookie<boolean>('term_voice', String(idToUse)) ?? false);
         setDefVoiceState(getFromCookie<boolean>('def_voice', String(idToUse)) ?? false);
     }, [setId, flashcardSet.id]);
+
+    const closeTo = isEditMode && flashcardSet.id
+        ? `/flashcard-set/${flashcardSet.id}`
+        : '/';
 
     const handleCardChange = (index: number, field: keyof Card, value: string) => {
         const newCards = [...flashcardSet.cards];
@@ -121,6 +126,7 @@ export const FlashcardSetForm = () => {
 
     return (
         <Container maxWidth="sm">
+            <CloseButton to={closeTo} />
             <Typography variant="h4" gutterBottom>
                 {isEditMode ? t('flashcardSetForm.editTitle') : t('flashcardSetForm.createTitle')}
             </Typography>
@@ -158,7 +164,7 @@ export const FlashcardSetForm = () => {
                     {t('flashcardSetForm.importCards')}
                 </Typography>
 
-                <Button variant="outlined" component="label" sx={{mb: 2}}>
+                <Button variant="contained" component="label" color="inherit" sx={{mb: 2}}>
                     {t('flashcardSetForm.importFile')}
                     <input
                         type="file"
@@ -187,18 +193,18 @@ export const FlashcardSetForm = () => {
                             fullWidth
                             required
                         />
-                        <IconButton onClick={() => deleteCard(i)} color="error">
+                        <IconButton onClick={() => deleteCard(i)} color="default">
                             <DeleteIcon/>
                         </IconButton>
                     </Box>
                 ))}
-                <Button onClick={addCard} variant="outlined" sx={{mt: 1, mb: 2}}>
+                <Button onClick={addCard} variant="contained" color="inherit" sx={{mt: 1, mb: 2}}>
                     {t('flashcardSetForm.addCard')}
                 </Button>
                 <Button
                     type="submit"
                     variant="contained"
-                    color="primary"
+                    color="inherit"
                     fullWidth
                     disabled={isSubmitting}
                 >

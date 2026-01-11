@@ -8,6 +8,7 @@ import {deleteFlashcardSet} from "../api/flashcardSet.ts";
 import {speakText} from "../services/textToSpeech";
 import {getFromCookie, saveToCookie} from "../utils/cookies.ts";
 import { useTranslation } from 'react-i18next';
+import {CloseButton} from "./CloseButton.tsx";
 
 export const FlashcardSet = () => {
     const { t } = useTranslation();
@@ -118,6 +119,7 @@ export const FlashcardSet = () => {
 
     return (
         <Box display="flex" flexDirection="column" alignItems="center" gap={2} mt={4}>
+            <CloseButton to={`/`} />
             {!id && <Typography color="error">{t('flashcardSet.idNotFound')}</Typography>}
             {loading && <Typography>{t('flashcardSet.loading')}</Typography>}
             {error && <Typography color="error">{error.message}</Typography>}
@@ -151,12 +153,12 @@ export const FlashcardSet = () => {
                         />
                     </Box>
                     <Box display="flex" gap={2} mt={2}>
-                        <Button variant="contained" color="inherit" onClick={goPrev}>🡄 {t('flashcardSet.prev')}</Button>
-                        <Button variant="contained" color="inherit" onClick={goNext}>{t('flashcardSet.next')} 🡆</Button>
+                        <Button variant="contained" color="inherit" onClick={goPrev}>⇐ {t('flashcardSet.prev')}</Button>
+                        <Button variant="contained" color="inherit" onClick={goNext}>{t('flashcardSet.next')} ⇒</Button>
                         <Button variant="contained" color="inherit" onClick={toggleCardSide}>{isTerm ? t('flashcardSet.toDef') : t('flashcardSet.toTerm')}</Button>
                         <Button variant="contained" color="inherit" onClick={() =>speakText(flipped
                             ? (isTerm ? currentCard.definition : currentCard.term)
-                            : (isTerm ? currentCard.term : currentCard.definition))}>{t('flashcardSet.voice')} 🔊</Button>
+                            : (isTerm ? currentCard.term : currentCard.definition))}>{t('flashcardSet.voice')} 🔈</Button>
                     </Box>
 
                     <Dialog open={deleteDialogOpen} onClose={() => setDeleteDialogOpen(false)}>

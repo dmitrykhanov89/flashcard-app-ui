@@ -102,15 +102,15 @@ export const LoginPage = () => {
                         >
                             {error || 'placeholder'}
                         </Typography>
-                        <Button type="submit" variant="contained" fullWidth>
+                        <Button type="submit" variant="contained" color="inherit" fullWidth>
                             Войти
                         </Button>
                     </Stack>
                 </form>
 
-                <Typography variant="body2" align="center" mt={2}>
+                <Typography variant="body2"  align="center" mt={2}>
                     Нет аккаунта?{' '}
-                    <Link component={RouterLink} to="/register">
+                    <Link component={RouterLink} color="inherit" to="/register">
                         Зарегистрироваться
                     </Link>
                 </Typography>

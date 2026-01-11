@@ -3,6 +3,7 @@ import { useState, useEffect, useMemo } from "react";
 import { Box, Button, Typography, Dialog, DialogTitle, DialogContent } from "@mui/material";
 import { useGetFlashcardById } from "../hooks/UseFlashcardFetch";
 import { useTranslation } from 'react-i18next';
+import { CloseButton } from "./CloseButton.tsx";
 
 type Mode = "definitionToTerm" | "termToDefinition";
 
@@ -68,6 +69,7 @@ export const MultipleChoice = () => {
 
     return (
         <Box display="flex" flexDirection="column" alignItems="center" gap={2} mt={4}>
+            <CloseButton to={`/flashcard-set/${id}`} />
             {!id && <Typography color="error">{t('flashcardSet.idNotFound')}</Typography>}
             {loading && <Typography>{t('flashcardSet.loading')}</Typography>}
             {error && <Typography color="error">{error.message}</Typography>}
@@ -97,25 +99,17 @@ export const MultipleChoice = () => {
                     <Typography variant="h4">{data.name}</Typography>
                     <Typography>{index + 1} / {cards.length}</Typography>
 
-                    <Box mt={4} p={3} border="1px solid #ccc" borderRadius="8px">
-                        <Typography variant="h6">
+                    <Box mt={4} p={3} border="1px solid #ccc" borderRadius="8px" display="flex" flexDirection="column"
+                         justifyContent="space-between" alignItems="center" gap={2} width="700px" height="400px" margin="0 auto" bgcolor="white">
+                        <Typography variant="h6" textAlign="center" sx={{ marginTop: "auto", marginBottom: "auto" }}>
                             {mode === "definitionToTerm" ? currentCard.definition : currentCard.term}
                         </Typography>
-                    </Box>
 
-                    <Box
-                        mt={4}
-                        display="grid"
-                        gridTemplateColumns="1fr 1fr"
-                        gap={2}
-                        width="400px"
-                        margin="0 auto"
-                    >
-                        {options.map((opt, i) => (
-                            <Button key={i} variant="contained" color="inherit" onClick={() => handleAnswer(opt)}>
-                                {opt}
-                            </Button>
-                        ))}
+                        <Box display="grid" gridTemplateColumns="1fr 1fr" gap={2} width="100%">
+                            {options.map((opt, i) => (
+                                <Button key={i} variant="contained" color="inherit" onClick={() => handleAnswer(opt)}>{opt}</Button>
+                            ))}
+                        </Box>
                     </Box>
 
                     {message === "correct" && <Typography mt={3} color="green">{t('multipleChoice.correct')}</Typography>}
@@ -129,8 +123,8 @@ export const MultipleChoice = () => {
                                 <br /><br />
                                 {t('multipleChoice.completedFooter', { name: data.name })}
                             </Typography>
-                            <Button fullWidth variant="contained" sx={{ mt: 2 }} onClick={() => navigate(`/flashcard-set/${id}`)}>
-                                {t('multipleChoice.return')}
+                            <Button fullWidth variant="contained" color="inherit" sx={{ mt: 2 }} onClick={() =>
+                                navigate(`/flashcard-set/${id}`)}>{t('multipleChoice.return')}
                             </Button>
                         </DialogContent>
                     </Dialog>
