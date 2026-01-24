@@ -1,7 +1,7 @@
 import {useState} from 'react';
 import type {CreateUserDto} from '../types/UserTypes';
 import {useAuth} from '../hooks/UseAuth';
-import {Alert, Box, Button, Stack, TextField, Typography} from '@mui/material';
+import {Alert, Box, Button, CircularProgress, Stack, TextField, Typography} from '@mui/material';
 import {User} from "../types/authTypes.ts";
 import {useNavigate} from "react-router-dom";
 import {login, register} from "../api/authentication.ts";
@@ -23,6 +23,7 @@ export const RegisterForm = () => {
     });
 
     const [error, setError] = useState('');
+    const [loading, setLoading] = useState(false);
     const {updateToken: updateToken, updateUser: updateUser} = useAuth(); // сохраняем и токен, и пользователя
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -39,17 +40,29 @@ export const RegisterForm = () => {
             setError('Не все обязательные поля заполнены');
             return;
         }
-        try {
-            const user: User = await register(form);
-            updateUser(user);
-            const token: string = await login(form);
-            updateToken(token);
-            navigate('/')
-        } catch (error: unknown) {
-            if (error instanceof Error) {
-                setError(error.message);
-            } else {
-                setError('Неизвестная ошибка');
+        setLoading(true);
+        const MAX_RETRIES = 3;
+        let attempt = 0;
+        while (attempt < MAX_RETRIES) {
+            try {
+                const user: User = await register(form);
+                updateUser(user);
+                const token: string = await login(form);
+                updateToken(token);
+                navigate('/')
+                break;
+            } catch (error: unknown) {
+                attempt++;
+                if (attempt >= MAX_RETRIES) {
+                    if (error instanceof Error) {
+                        setError(error.message);
+                    } else {
+                        setError('Неизвестная ошибка');
+                    }
+                    setLoading(false);
+                } else {
+                    await new Promise(res => setTimeout(res, 2000));
+                }
             }
         }
     };
@@ -62,75 +75,41 @@ export const RegisterForm = () => {
             component="form"
             onSubmit={handleSubmit}
             noValidate
-            sx={{
-                mt: 2,
-                width: '100%',
-                maxWidth: 450,
-                mx: 'auto',
-                px: 2,
-                boxSizing: 'border-box',
-            }}
-        >
+            sx={{mt: 2, width: '100%', maxWidth: 450, mx: 'auto', px: 2, boxSizing: 'border-box',}}>
             <Stack spacing={2}>
                 <Typography variant="h5" align="center">
                     Регистрация
                 </Typography>
 
-                <TextField
-                    label="Имя"
-                    name="name"
-                    value={form.name}
-                    onChange={handleChange}
-                    required
-                    fullWidth
-                    error={isFieldEmpty('name')}
-                />
-                <TextField
-                    label="Фамилия"
-                    name="surname"
-                    value={form.surname}
-                    onChange={handleChange}
-                    required
-                    fullWidth
-                    error={isFieldEmpty('surname')}
-                />
-                <TextField
-                    label="Логин"
-                    name="login"
-                    value={form.login}
-                    onChange={handleChange}
-                    required
-                    fullWidth
-                    error={isFieldEmpty('login')}
-                />
-                <TextField
-                    label="Email"
-                    name="email"
-                    type="email"
-                    value={form.email}
-                    onChange={handleChange}
-                    required
-                    fullWidth
-                    error={isFieldEmpty('email')}
-                />
-                <TextField
-                    label="Пароль"
-                    name="password"
-                    type="password"
-                    value={form.password}
-                    onChange={handleChange}
-                    required
-                    fullWidth
-                    error={isFieldEmpty('password')}
-                />
+                {[
+                    { name: 'name' as const, label: 'Имя', type: 'text' },
+                    { name: 'surname' as const, label: 'Фамилия', type: 'text' },
+                    { name: 'login' as const, label: 'Логин', type: 'text' },
+                    { name: 'email' as const, label: 'Email', type: 'email' },
+                    { name: 'password' as const, label: 'Пароль', type: 'password' },
+                ].map(({ name, label, type }) => (
+                    <TextField
+                        key={name}
+                        label={label}
+                        name={name}
+                        type={type}
+                        value={form[name]}
+                        onChange={handleChange}
+                        required
+                        fullWidth
+                        error={isFieldEmpty(name)}
+                        disabled={loading}
+                    />
+                ))}
                 {/* Ошибка */}
                 <Box sx={{minHeight: 52}}>
                     {error && (
                         <Alert severity="error">{error}</Alert>
                     )}
                 </Box>
-                <Button type="submit" variant="contained" color="inherit" fullWidth>
-                    Зарегистрироваться
+                <Button type="submit" variant="contained" color="inherit" fullWidth disabled={loading}
+                    startIcon={loading ? <CircularProgress size={20} /> : null}>
+                    {loading ? 'Регистрация...' : 'Зарегистрироваться'}
                 </Button>
             </Stack>
         </Box>
