@@ -38,16 +38,6 @@ export const httpClient = async <B = unknown, R = unknown>(url: string, options?
         headers['Authorization'] = `Bearer ${storedToken}`;
     }
 
-    const getCsrfToken = () => localStorage.getItem('csrfToken');
-
-    const isModifying = ['POST', 'PUT', 'PATCH', 'DELETE'].includes(options?.method || 'GET');
-    if (isModifying) {
-        const csrfToken = getCsrfToken();
-        if (csrfToken) {
-            headers['X-XSRF-TOKEN'] = csrfToken;
-        }
-    }
-
     const response = await fetch(url, {
         method: options?.method || 'GET',
         headers,
@@ -60,11 +50,6 @@ export const httpClient = async <B = unknown, R = unknown>(url: string, options?
     if (newToken?.startsWith('Bearer ')) {
         const token = newToken.substring(7);
         localStorage.setItem('token', token);
-    }
-
-    const csrfHeader = response.headers.get('X-CSRF-TOKEN');
-    if (csrfHeader) {
-        localStorage.setItem('csrfToken', csrfHeader);
     }
 
     if (!response.ok) {

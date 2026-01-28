@@ -5,6 +5,7 @@ import type { FlashcardSet } from "../types/flashcardSetTypes";
 import { useTranslation } from 'react-i18next';
 import { CloseButton } from "./CloseButton.tsx";
 import { Box, Typography } from "@mui/material";
+import flashcardImage from "../assets/flashcard.png";
 
 /**
  * Компонент страницы с наборами карточек текущего пользователя.
@@ -44,6 +45,7 @@ export const Library = () => {
                                 name={set.name}
                                 cardsCount={set.cards.length}
                                 ownerName={set.ownerName}
+                                imageUrl={flashcardImage}
                             />
                         ))}
                 </Box>

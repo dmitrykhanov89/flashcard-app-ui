@@ -4,5 +4,5 @@ import { vanillaExtractPlugin } from '@vanilla-extract/vite-plugin'
 
 export default defineConfig({
   plugins: [react(), vanillaExtractPlugin()],
-    base: '/flashcard-app-ui-pages/',
+    base: process.env.VITE_BASE_PATH || '/',
 })

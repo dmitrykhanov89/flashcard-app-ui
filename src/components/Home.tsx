@@ -2,6 +2,7 @@ import { useGetLastSeenFlashcardSet } from "../hooks/UseFlashcardFetch";
 import { FlashcardSetSelectCard } from "./FlashcardSetSelectCard.tsx";
 import { useTranslation } from 'react-i18next';
 import { Box, Typography } from "@mui/material";
+import flashcardImage from "../assets/flashcard.png";
 
 /**
  * Компонент главной страницы.
@@ -34,6 +35,7 @@ export const Home = () => {
                             name={set.flashcardSetName}
                             cardsCount={set.cardsCount}
                             ownerName={set.ownerName}
+                            imageUrl={flashcardImage}
                         />
                     ))}
                 </Box>

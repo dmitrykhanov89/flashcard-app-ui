@@ -99,7 +99,7 @@ export const FlashcardSetForm = () => {
             return;
         }
 
-        if (!flashcardSet.name || !flashcardSet.description || !flashcardSet.cards.every(card => card.term && card.definition)) {
+        if (!flashcardSet.name || !flashcardSet.cards.every(card => card.term && card.definition)) {
             setError(t('flashcardSetForm.fillAllFields'));
             return;
         }
