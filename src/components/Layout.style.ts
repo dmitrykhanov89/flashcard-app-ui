@@ -69,5 +69,5 @@ export const mainContentSx = {
     bgcolor: '#f3f0f2',
     p: 3,
     mt: '73px',
-    minHeight: '100vh',
+    minHeight: 'calc(100vh - 73px)',
 };

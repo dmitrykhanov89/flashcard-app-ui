@@ -118,7 +118,7 @@ export const FlashcardSet = () => {
     };
 
     return (
-        <Box display="flex" flexDirection="column" alignItems="center" gap={2} mt={4}>
+        <Box display="flex" flexDirection="column" alignItems="center" gap={2}>
             <CloseButton to={`/`} />
             {!id && <Typography color="error">{t('flashcardSet.idNotFound')}</Typography>}
             {loading && <Typography>{t('flashcardSet.loading')}</Typography>}
